@@ -25,12 +25,11 @@ class DopeBot
                  {
                      if (e.Message.Content.ToLower().StartsWith("solve"))
                      {  //format is solve-0001-
-                         int crackmeID;
                          string solution;
                          try
                          {
                              string[] query = e.Message.Content.Split('-');
-                             crackmeID = int.Parse(query[1]);
+                             int crackmeID = int.Parse(query[1]);
 
                              solution = query[2];
                              await e.Message.RespondAsync(crackmeID + " " + solution);
