@@ -61,50 +61,55 @@ class DopeBot
                 TokenType = TokenType.Bot,
                 Token = readtoken
             };
-     
             discord = new DiscordClient(config);
+         
+            discord.MessageCreated += async (s, e) =>
+            {
+                if (e.Message.Content.ToLower().StartsWith("..solve"))
+                {  //format is solve-0001-
+                    try
+                    {
+                        string[] query = e.Message.Content.Split('-');
+                        int crackID = int.Parse(query[1]);
+
+                        var solution = query[2];
+                        await e.Message.RespondAsync(crackID + " " + solution);
+                        await e.Message.DeleteAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        await e.Message.RespondAsync("nigga wat?"); 
+                        //await e.Message.RespondAsync(ex.ToString());
+                    }
+
+                         
+                    
+                }
+            };
+            await discord.ConnectAsync();
+           
+       
             
             string downloadedtable = await DownloadDocument();
            
-            
+        
             List <solutiontable> MasterTable = null;
             string[] parsedtable = downloadedtable.Split("-", StringSplitOptions.RemoveEmptyEntries);
+
             for (byte b = 0; b < parsedtable.Length; b += 2)
             {
-                solutiontable entry = new solutiontable(byte.Parse(parsedtable[b]), parsedtable[b + 1]);
-                MasterTable.Add(entry);
-
+                if (parsedtable != null)
+                {
+                    solutiontable entry = new solutiontable(byte.Parse(parsedtable[b]), parsedtable[b + 1]);
+                    if (MasterTable != null) MasterTable.Add(entry);
+                }
             }
 
        
 
-         discord.MessageCreated += async (s, e) =>
-                 {
-                     if (e.Message.Content.ToLower().StartsWith("..solve"))
-                     {  //format is solve-0001-
-                         try
-                         {
-                             string[] query = e.Message.Content.Split('-');
-                             int crackID = int.Parse(query[1]);
-
-                             var solution = query[2];
-                             await e.Message.RespondAsync(crackID + " " + solution);
-                             await e.Message.DeleteAsync();
-                         }
-                         catch (Exception ex)
-                         {
-                             await e.Message.RespondAsync("nigga wat?"); 
-                             //await e.Message.RespondAsync(ex.ToString());
-                         }
-
-                         
-                    
-                     }
-                 };
          
-            await discord.ConnectAsync();
+           
             await Task.Delay(-1);
-            
             
             
         }
